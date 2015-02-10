@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gavin.mybatis.mapper.blogMapper">
+
+	<select id="selectBlog_by_id" parameterType="int" resultType="Blog">
+		select id,title,author_id as authorId from blog where id = #{id}
+	</select>
+	
+	<select id="selectBlog_by_id_Map" parameterType="HashMap" resultType="Blog">
+		select id,title,author_id as authorId from blog where id = #{id}
+	</select>
+	
+	<select id="selectBlog_by_bean" parameterType="Blog" resultType="Blog">
+		select id,title,author_id as authorId from blog where id = #{id}
+	</select>
+	
+	<update id="updateBlog_use_bean" statementType="PREPARED" parameterType="Blog">
+		update blog set title=#{title}, author_id=#{authorId}  where id = #{id}
+	</update>
+	
+	<delete id="deleteBlog_use_bean" statementType="PREPARED" parameterType="Blog">
+		delete from blog where id = #{id}
+	</delete>
+	
+	<insert id="insertBlog_use_bean" statementType="PREPARED" parameterType="Blog">
+		<!-- 自动生成主键 -->
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			select max(id)+1 from blog
+		</selectKey>
+		insert into blog values(#{id},#{title,jdbcType=VARCHAR},#{authorId})
+	</insert>
+</mapper>

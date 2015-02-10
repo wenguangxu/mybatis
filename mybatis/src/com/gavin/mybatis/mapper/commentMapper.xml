@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gavin.mybatis.mapper.commentMapper">
+	<resultMap id="commentResultMap" type="Comment">
+		<constructor>
+			<idArg column="id" javaType="int"/>
+			<arg column="post_id" javaType="int"/>
+			<arg column="name" javaType="String"/>
+			<arg column="comments" javaType="String"/>
+		</constructor>
+	</resultMap>
+	<select id="selectComment_by_id" resultMap="commentResultMap">
+		select id,post_id,name,comments from Comments where id = #{id}
+	</select>
+	
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<properties resource="sqlconfig.properties" />
+	<typeAliases>
+		<typeAlias alias="Author" type="com.gavin.mybatis.entity.Author" />
+		<typeAlias alias="Blog" type="com.gavin.mybatis.entity.Blog" />
+		<typeAlias alias="Comment" type="com.gavin.mybatis.entity.Comment" />
+		<typeAlias alias="Post" type="com.gavin.mybatis.entity.Post" />
+		<typeAlias alias="Tag" type="com.gavin.mybatis.entity.Tag" />
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC"/>
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<mappers>
+		<mapper resource="com/gavin/mybatis/mapper/blogMapper.xml" />
+		<mapper resource="com/gavin/mybatis/mapper/commentMapper.xml" />
+		<mapper resource="com/gavin/mybatis/mapper/postMapper.xml" />
+		
+	</mappers>
+</configuration>

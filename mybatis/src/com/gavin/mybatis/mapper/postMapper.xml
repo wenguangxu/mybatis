@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 使用association元素处理级联 -->
+<!-- 第一种配置： -->
+
+<!-- 
+<mapper namespace="com.gavin.mybatis.mapper.postMapper">
+
+	<resultMap id="postResult" type="Post">
+	
+		<id property="id" column="id"/>
+		<result property="createdOn" column="created_on"/>
+		<result property="section" column="section"/>
+		<result property="subject" column="subject"/>
+		<result property="body" column="body"/>
+		
+		<association property="blog" javaType="Blog">
+			<id property="id" column="id"/>
+			<result property="title" column="title"/>
+			<result property="authorId" column="author_id"/>
+		</association>
+		
+		<association property="author" javaType="Author">
+			<id property="id" column="id"/>
+			<result property="username" column="username"/>
+			<result property="password" column="password"/>
+			<result property="email" column="email"/>
+			<result property="bio" column="bio"/>
+		</association>
+		
+	</resultMap>
+	
+	<select id="selectPost_use_association" resultMap="postResult">
+		select P.id,P.created_on,P.section,P.subject,P.body,
+		B.id,B.title,B.author_Id,
+		A.id,A.username,A.password,A.email,A.bio 
+		from Post P,Blog B,Author A 
+		where P.blog_id=B.id and P.author_id=A.id 
+		and P.id = #{id}
+	</select>
+	
+</mapper>
+
+ -->
+ 
+ <!-- 第二种配置： -->
+ <!-- 
+ <mapper namespace="com.gavin.mybatis.mapper.postMapper">
+
+	<resultMap id="postResult" type="Post">
+	
+		<id property="id" column="id"/>
+		<result property="createdOn" column="created_on"/>
+		<result property="section" column="section"/>
+		<result property="subject" column="subject"/>
+		<result property="body" column="body"/>
+		
+		<association property="blog" column="blog_id" javaType="Blog" resultMap="blogResult" />
+		<association property="author" column="author_id" javaType="Author" resultMap="authorResult" />
+		
+	</resultMap>
+	
+	<resultMap id="blogResult" type="Blog">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="authorId" column="author_id"/>
+	</resultMap>
+	
+	<resultMap id="authorResult" type="Author">
+		<id property="id" column="id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="email" column="email"/>
+		<result property="bio" column="bio"/>
+	</resultMap>
+	
+	<select id="selectPost_use_association" parameterType="int" resultMap="postResult">
+		select P.id,P.created_on,P.section,P.subject,P.body,
+		B.id,B.title,B.author_Id,
+		A.id,A.username,A.password,A.email,A.bio 
+		from Post P,Blog B,Author A 
+		where P.blog_id=B.id and P.author_id=A.id 
+		and P.id = #{id}
+	</select>
+	
+</mapper>
+
+ -->
+ 
+ <!-- 第三种配置：(如果返回多个结果会产生N+1次查询) -->
+ <mapper namespace="com.gavin.mybatis.mapper.postMapper">
+
+	<resultMap id="postResult" type="Post">
+		<association property="blog" column="blog_id" javaType="Blog" select="selectBlog"/>
+		<association property="author" column="author_id" javaType="Author" select="selectAuthor"/>
+	</resultMap>
+	
+	<select id="selectBlog" parameterType="int" resultType="Blog">
+		select id,title,author_id as authorId from blog where id = #{id}
+	</select>
+	
+	<select id="selectAuthor" parameterType="int" resultType="Author">
+		select * from Author where id = #{id}
+	</select>
+	
+	<select id="selectPost_use_association" parameterType="int" resultMap="postResult">
+		select id,blog_id,author_id,created_on as createdOn,section,subject,body from post where id = #{id}
+	</select>
+	
+</mapper>
+ 
