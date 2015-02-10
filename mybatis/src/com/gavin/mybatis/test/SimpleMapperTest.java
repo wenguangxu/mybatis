@@ -1,71 +1,60 @@
 package com.gavin.mybatis.test;
 
 import java.util.HashMap;
-
+import junit.framework.TestCase;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-
-import ch.qos.logback.classic.BasicConfigurator;
-
 import com.gavin.mybatis.entity.Blog;
 import com.gavin.mybatis.entity.BlogMapper;
 import com.gavin.mybatis.entity.Comment;
 import com.gavin.mybatis.entity.Post;
 import com.gavin.mybatis.util.SqlMapperManager;
 
-public class SimpleMapperTest {
+/**
+ * 注意：JUnit推荐的做法是以test作为待测试的方法的开头，这样这些方法可以被自动找到并被测试。
+ * 
+ * junit3.x
+ * 
+ * 我们通常使用junit 3.8
+ * (1)、使用junit3.x版本进行单元测试时，测试类必须要继承于TestCase父类；
+ * (2)、测试方法需要遵循的原则：
+ * 	A、public的
+ * 	B、void的
+ * 	C、无方法参数
+ * 	D、方法名称必须以test开头
+ * (3)、不同的Test Case之间一定要保持完全的独立性，不能有任何的关联。
+ * (4)、我们要掌握好测试方法的顺序，不能依赖于测试方法自己的执行顺序。
+ * 
+ * 在实际的测试中我们测试某个类的功能是常常需要执行一些共同的操作，完成以后需要销毁所占用的资源（例如网络连接、数据库连接，关闭打开的文件等），
+ * TestCase类给我们提供了setUp方法和tearDown方法，setUp方法的内容在测试你编写的TestCase子类的每个testXxxx方法之前都会运行，
+ * 而tearDown方法的内容在每个testXxxx方法结束以后都会执行。这个既共享了初始化代码，又消除了各个测试代码之间可能产生的相互影响。
+ * 
+ */
+public class SimpleMapperTest extends TestCase{
 
-	private static SimpleMapperTest test = new SimpleMapperTest();
 	private static SqlSession session = null;
 	
 	
-	public static void main(String[] args) {
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 		
-		
-		try {
-			SqlSessionFactory factory = SqlMapperManager.getFactory();
-			if(factory == null) {
-				System.out.println("get SqlSessionFatory failed");
-				return;
-			}
-			
-			session = factory.openSession();
-			//session = factory.openSession(true);//自动提交事务
-			
-			//查询
-			//test.testSelect();
-			
-			//更新
-			//test.testUpdate();
-			
-			//插入
-			//test.testInsert();
-			
-			//删除
-			//test.testDelete();
-			
-			//插入测试自动生成主键
-			//test.testInsertSequence();
-			
-			//处理NULL值
-			//test.testInsertNull();
-			
-			//测试接口映射类
-			//test.testInterfaceMapper();
-			
-			//测试resultMap的construct
-			//test.testConstructor();
-			
-			//测试association关联
-			test.testAssociation();
-			
-			session.commit();//提交事务
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}finally{
-			session.close();
+		SqlSessionFactory factory = SqlMapperManager.getFactory();
+		if(factory == null) {
+			System.out.println("get SqlSessionFatory failed");
+			return;
 		}
+		
+		session = factory.openSession();
+		//session = factory.openSession(true);//自动提交事务
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		
+		session.commit();//提交事务
+		session.close();
 	}
 	
 	/**
@@ -74,19 +63,19 @@ public class SimpleMapperTest {
 	public void testSelect() {
 		Blog blog = new Blog();
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_id",1);
-		test.printBlog(blog);
+		this.printBlog(blog);
 		
 		HashMap<String,Integer> paramMap = new HashMap<String,Integer>();
 		paramMap.put("id", 1);
 		
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_id_Map",paramMap);
-		test.printBlog(blog);
+		this.printBlog(blog);
 		
 		Blog myBlog = new Blog();
 		myBlog.setId(1);
 		
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_bean",myBlog);
-		test.printBlog(blog);
+		this.printBlog(blog);
 	}
 	
 	/**
@@ -198,7 +187,7 @@ public class SimpleMapperTest {
 	 */
 	public void testAssociation() {
 		Post p = (Post)session.selectOne("selectPost_use_association",1);
-		test.printPost(p);
+		this.printPost(p);
 	}
 	
 	public void printPost(Post p) {
