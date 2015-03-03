@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- 使用association元素处理级联 -->
+<!-- 使用association元素处理级联(一对一映射) -->
 <!-- 第一种配置： -->
 
 <!-- 
@@ -44,7 +44,7 @@
 
  -->
  
- <!-- 第二种配置： -->
+ <!-- 第二种配置(嵌套结果ResultMap)： -->
  <!-- 
  <mapper namespace="com.gavin.mybatis.mapper.postMapper">
 
@@ -88,7 +88,7 @@
 
  -->
  
- <!-- 第三种配置：(如果返回多个结果会产生N+1次查询) -->
+ <!-- 第三种配置：(使用嵌套查询；如果返回多个结果会产生N+1次查询) -->
  <mapper namespace="com.gavin.mybatis.mapper.postMapper">
 
 	<resultMap id="postResult" type="Post">

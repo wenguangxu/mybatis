@@ -6,12 +6,12 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-public class SqlMapperManager {
+public class SqlSessionFactoryManager {
 
 	private static SqlSessionFactory factory = null;
 	private static String fileName = "mybatis.xml";
 	
-	private SqlMapperManager(){}
+	private SqlSessionFactoryManager(){}
 	
 	public static void initMapper(String sqlMapperFileName){
 		fileName = sqlMapperFileName;

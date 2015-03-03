@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+	默认情况下，启用一级缓存；即如果使用同一个SqlSession接口对象调用了相同的select语句，则直接会从缓存中返回结果，而不是再查询一次数据库。 
+	二级缓存：
+		我们可以在SQL映射器XML配置文件中使用<cache/>元素添加全局二级缓存。
+		当加入了<cache/>元素，将会出现以下情况：
+			   所有 的 在映射语句文件定义<select>语句 的查询结果都会被缓存;
+			   所有的在映射语句文件定义的 insert、update、delete 语句将会刷新缓存；
+			   缓存根据最近最少被使用（Least Recently Used，LRU）算法管理；
+			   缓存不会被任何形式的基于时间表的刷新（没有刷新时间间隔），即不支持定时刷新机制；
+			   缓存将存储1024个查询方法返回的列表或者对象的引用；
+			   缓存会被当做一个读/写缓存。这是指检索出的对象不会被共享，并且可以被调用者安全地修改，不会其他潜在的调用者或者线程的潜在修改干扰。（即，缓存是线程安全的）
+-->
+
+<!-- 
+	可以通过复写默认属性来自定义缓存的行为：
+	<cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+	eviction : 定义缓存的移除机制。默认LRU,可能的值：LRU（最近最少使用），FIFO（先进先出），SOFT（软引用），WEAK（弱引用）
+	flushInterval ： 定义缓存刷新间隔，以毫秒计。默认情况下不设置，所以不使用刷新间隔，缓存cache只有调用语句的时候刷新。
+	size ： 缓存中能容纳的最大元素数。默认1024，可以设置成任意的正整数。
+	readOnly ： 一个只读的缓存cache会对所有的调用者返回被缓存对象的同一个实例(实际返回的是被返回对象的一份引用)。一个读/写缓存cache将会返回被返回对象的一份拷贝(通过序列化)。默认false，可能的值有false和true。
+-->
+
+<!-- 
+	一个缓存的配置和缓存实例被绑定到映射器配置文件所在的命名空间（namespace）上，所以在相同命名空间的所有语句被绑定到一个cache中。
+-->
+	
+<mapper namespace="com.gavin.mybatis.mapper.cache">
+
+	<!-- 默认的映射语句的cache配置如下： -->
+	
+	<select id="" flushCache="false" useCache="true"/>
+	<insert id="" flushCache="true"/>
+	<update id="" flushCache="true"/>
+	<delete id="" flushCache="true"/>
+	
+	<!-- 可以为任意特定的映射语句复写默认的cache行为：
+		对一个select语句不使用缓冲，可以设置 useCache="false" -->
+	
+</mapper>
+
+<!-- 除了内建的缓存支持，Mybatis也提供了与第三方缓存类库如：Ehcache，OSCache，Hazelcast 的集成支持，可以在  https://code.google.com/p/mybatis/wiki/Caches 上找到相关信息-->
+

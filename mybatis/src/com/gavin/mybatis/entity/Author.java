@@ -1,5 +1,8 @@
 package com.gavin.mybatis.entity;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("author")
 public class Author {
 	
 	private Integer id;

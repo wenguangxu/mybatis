@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- MyBatis是使用ONGL（Object Graph Navigation Language）表达式来构建动态SQL语句。 -->
+
+<mapper namespace="com.gavin.mybatis.mapper.dynamicSql">
+
+	<!-- if: -->
+	<select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
+
+		SELECT * FROM COURSES WHERE TUTOR_ID= #{tutorId}
+
+		<if test="courseName != null">
+			AND NAME LIKE #{courseName}
+		</if>
+		<if test="startDate != null">
+			AND START_DATE >= #{startDate}
+		</if>
+		<if test="endDate != null">
+			AND END_DATE <= #{endDate}
+		</if>
+
+	</select>
+
+
+	<!-- choose,when,otherwise 有时候 ，查询 功能是 以查询 类别 为基础 的。首先，用户需要选择是否希望通过选择 讲师，课程时间，开始时间，结束时间作为查询条件类别来进行查询，然后根据选择的查询类别，输入相应的参数。在这样的情景中，我们需要只使用其中一种查询类别。 
+		Mybatis提供了choose元素支持此类型的SQL预处理。 -->
+
+	<select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
+		SELECT * FROM COURSES
+		<choose>
+			<when test="searchBy == 'Tutor'">
+				WHERE TUTOR_ID= #{tutorId}
+			</when>
+			<when test="searchBy == 'CourseName'">
+				WHERE name like #{courseName}
+			</when>
+			<otherwise>
+				WHERE TUTOR start_date >= now()
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- where: -->
+	<select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
+		SELECT * FROM COURSES
+		<where>
+			<if test=" tutorId != null and tutorId != '' ">
+				TUTOR_ID= #{tutorId}
+			</if>
+			<if test="courseName != null">
+				AND name like #{courseName}
+			</if>
+			<if test="startDate != null">
+				AND start_date >= #{startDate}
+			</if>
+			<if test="endDate != null">
+				AND end_date <= #{endDate}
+			</if>
+		</where>
+	</select>
+
+	<!-- trim: -->
+	<select id="searchCourses" parameterType="hashmap" resultMap="CourseResult">
+		SELECT * FROM COURSES
+		<trim prefix="WHERE" prefixOverrides="AND | OR">
+			<if test=" tutorId != null ">
+				TUTOR_ID= #{tutorId}
+			</if>
+			<if test="courseName != null">
+				AND name like #{courseName}
+			</if>
+		</trim>
+	</select>
+
+	<!-- foreach:迭代一个数组或者列表，构造AND/OR条件或一个IN字句 -->
+	<select id="searchCoursesByTutors" parameterType="map"
+		resultMap="CourseResult">
+		SELECT * FROM COURSES
+		<if test="tutorIds != null">
+			<where>
+				<foreach item="tutorId" collection="tutorIds">
+					OR tutor_id=#{tutorId}
+				</foreach>
+			</where>
+		</if>
+	</select>
+
+	<select id="searchCoursesByTutors" parameterType="map"
+		resultMap="CourseResult">
+		SELECT * FROM COURSES
+		<if test="tutorIds != null">
+			<where>
+				tutor_id IN
+				<foreach item="tutorId" collection="tutorIds" open="("
+					separator="," close=")">
+					#{tutorId}
+				</foreach>
+			</where>
+		</if>
+	</select>
+
+	<!-- set: -->
+	<update id="updateStudent" parameterType="Student">
+		update students
+		<set>
+			<if test="name != null">name=#{name},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="phone != null">phone=#{phone},</if>
+		</set>
+		where stud_id=#{id}
+	</update>
+</mapper>
+
+
+

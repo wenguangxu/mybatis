@@ -1,16 +1,84 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-	<properties resource="sqlconfig.properties" />
+
+	<!-- 如果<properties>中定义的元素和属性文件定义的key值相同，它们会被属性文件中定义的值覆盖 -->
+	
+	<properties resource="sqlconfig.properties">
+		<property name="username" value="root"/>
+	</properties>
+	
+	<!-- 
+		mybatis默认的settings :
+		<settings>
+			<setting name="cacheEnabled" value="true" /> 二级缓存
+			<setting name="lazyLoadingEnabled" value="true" />
+			<setting name="multipleResultSetsEnabled" value="true" />
+			<setting name="useColumnLabel" value="true" />
+			<setting name="useGeneratedKeys" value="false" />
+			<setting name="autoMappingBehavior" value="PARTIAL" />
+			<setting name="defaultExecutorType" value="SIMPLE" /> 
+			<setting name="defaultStatementTimeout" value="25000" /> 
+			<setting name="safeRowBoundsEnabled" value="false" /> 
+			<setting name="mapUnderscoreToCamelCase" value="false" />
+			<setting name="localCacheScope" value="SESSION" />
+			<setting name="jdbcTypeForNull" value="OTHER" />
+			<setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode ,toString" />
+		</settings>
+	 -->
+
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	
+	<!-- 
+	1.在SqlMapper配置文件中，对于resultType和parameterType属性值，我们需要使用JavaBean的完全限定名。
+	2.我们可以为完全限定名取一个别名(alias)，然后其需要使用完全限定名的地方使用别名，而不是到处使用完全限定名。
+	3.可以不用为每一个JavaBean单独定义别名，可以为提供需要取别名的JavaBean所在的包(package)，mybatis会自动扫描包内定义的JavaBeans，然后分别为JavaBean注册一个小写字母开头的非完全限定的类名形式的别名。
+	4.也可以使用注解@Alias为JavaBeans起别名，@Alias注解将会覆盖配置文件中的<typeAliases>定义。
+	 -->
+	 
 	<typeAliases>
 		<typeAlias alias="Author" type="com.gavin.mybatis.entity.Author" />
 		<typeAlias alias="Blog" type="com.gavin.mybatis.entity.Blog" />
 		<typeAlias alias="Comment" type="com.gavin.mybatis.entity.Comment" />
 		<typeAlias alias="Post" type="com.gavin.mybatis.entity.Post" />
 		<typeAlias alias="Tag" type="com.gavin.mybatis.entity.Tag" />
+		
+		<package name="com.gavin.mybatis.entity"/>
 	</typeAliases>
 	
+	<!-- 
+	mybatis对于以下类型使用内建的类型处理器：
+		所有的基本数据类型、基本类型的包装类型、byte[]
+		java.util.Date java.sql.Date java.sql.Time java.sql.Timestamp
+		java枚举类型等
+	所以当mybatis发现属性的类型数据上述类型，它会使用对应的类型处理器将值设置到PreparedStatement中，同样的，当从sql结果集构件JavaBean时，也有类似的过程。
+	 -->
+	<typeHandlers>
+		<typeHandler handler="com.gavin.mybatis.handler.PhoneTypeHandler" />
+		<package name="com.gavin.mybatis.handler" />
+	</typeHandlers>
+	
+	<!-- 如果你的应用需要连接多个 数据库，你需要将每个数据库配置成独立的环境，并且为每一个数据库创建一个SqlSessionFactory。 -->
+	<!-- 
+		dataSource 类型：
+		UNPOOLED : 为每一个数据库操作创建一个新的连接，并关闭它。该方式适用于只有小规模数量并发用户的简单应用程序上。
+		POOLED ： 创建一个数据库连接池，连接池中的一个连接将会被用作数据库操作。一旦数据库操作完成，Mybatis会将此连接返回给连接池。在开发或测试环境中，经常使用此种方式。
+		JNDI ： 从应用服务器中向配置好的JNDI数据源 dataSource获取数据库连接。在生产环境中，优先考虑这种方式。
+	 -->
+	 <!-- 
+	 事务管理器 ： transactionManager ：
+	 JDBC ： JDBC事务管理器被用作当应用程序负责管理数据库连接的生命周期(提交、回退等)的时候。
+	 	当你将TransactionManager属性设置成JDBC，mybatis内部将使用JdbcTransactionFactory类创建TransactionManager。
+	 	例如，部署到Tomcat的应用程序，需要应用程序自己管理事务。
+	 MANAGED : 当由应用服务器负责管理数据库连接生命周期的时候使用。
+	 	设置成MANAGED时，mybatis内部使用ManagedTransactionFactory类创建事务管理器TransactionManager。
+	 	例如，当一个JavaEE应用程序部署在类似 JBoss，WebLogic，GlassFish应用服务器上时，它们会使用EJB进行应用服务器的事务管理能力。在这些管理环境中，你可以使用MANAGED事务管理器。
+	 	注：Managed是托管的意思，即是应用本身不去管理事务，把事务交给应用所在的服务器进行管理。
+	 	 -->
 	<environments default="development">
+	
 		<environment id="development">
 			<transactionManager type="JDBC"/>
 			<dataSource type="POOLED">
@@ -20,12 +88,31 @@
 				<property name="password" value="${password}" />
 			</dataSource>
 		</environment>
+		
+		<environment id="production">
+			<transactionManager type="MANAGED" />
+			<dataSource type="JNDI">
+				<property name="data_source" value="java:comp/jdbc/MyBatisDemoDS" />
+			</dataSource>
+		</environment>
+		
 	</environments>
 	
+	<!-- 
+	mappers中不同的属性有助于从不同类型的资源中加载映射mapper：
+		resource属性用来指定在classpath中的mapper文件。
+		url属性用来通过完全文件系统路径或者web URL地址来指向mapper文件。
+		class属性用来指向一个mapper接口。
+		package属性用来指向可以找到Mapper接口的包名。
+	 -->
+	 
 	<mappers>
 		<mapper resource="com/gavin/mybatis/mapper/blogMapper.xml" />
 		<mapper resource="com/gavin/mybatis/mapper/commentMapper.xml" />
 		<mapper resource="com/gavin/mybatis/mapper/postMapper.xml" />
 		
+		<mapper url="file:///D:/mybatisdemo/mappers/TutorMapper.xml" />
+		<mapper class="com.mybatis3.mappers.TutorMapper" />
 	</mappers>
+	
 </configuration>

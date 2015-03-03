@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import com.gavin.mybatis.entity.Blog;
-import com.gavin.mybatis.util.SqlMapperManager;
+import com.gavin.mybatis.util.SqlSessionFactoryManager;
 
 /**
  * junit4.x
@@ -33,7 +33,7 @@ public class Junit4Test{
 	@Before
 	public void before(){
 		
-		SqlSessionFactory factory = SqlMapperManager.getFactory();
+		SqlSessionFactory factory = SqlSessionFactoryManager.getFactory();
 		if(factory == null) {
 			System.out.println("get SqlSessionFatory failed");
 			return;

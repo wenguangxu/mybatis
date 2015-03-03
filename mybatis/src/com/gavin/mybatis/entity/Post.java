@@ -5,9 +5,9 @@ public class Post {
 
 	private Integer id;
 	
-	private Blog blog;
+	private Blog blog; //一对一映射
 	
-	private Author author;
+	private Author author; //一对一映射
 	
 	private String createdOn;
 	

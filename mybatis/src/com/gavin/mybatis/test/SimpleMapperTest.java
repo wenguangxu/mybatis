@@ -8,7 +8,7 @@ import com.gavin.mybatis.entity.Blog;
 import com.gavin.mybatis.entity.BlogMapper;
 import com.gavin.mybatis.entity.Comment;
 import com.gavin.mybatis.entity.Post;
-import com.gavin.mybatis.util.SqlMapperManager;
+import com.gavin.mybatis.util.SqlSessionFactoryManager;
 
 /**
  * 注意：JUnit推荐的做法是以test作为待测试的方法的开头，这样这些方法可以被自动找到并被测试。
@@ -39,7 +39,7 @@ public class SimpleMapperTest extends TestCase{
 	protected void setUp() throws Exception {
 		super.setUp();
 		
-		SqlSessionFactory factory = SqlMapperManager.getFactory();
+		SqlSessionFactory factory = SqlSessionFactoryManager.getFactory();
 		if(factory == null) {
 			System.out.println("get SqlSessionFatory failed");
 			return;
@@ -65,7 +65,7 @@ public class SimpleMapperTest extends TestCase{
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_id",1);
 		this.printBlog(blog);
 		
-		HashMap<String,Integer> paramMap = new HashMap<String,Integer>();
+		/*HashMap<String,Integer> paramMap = new HashMap<String,Integer>();
 		paramMap.put("id", 1);
 		
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_id_Map",paramMap);
@@ -75,7 +75,7 @@ public class SimpleMapperTest extends TestCase{
 		myBlog.setId(1);
 		
 		blog = (Blog) session.selectOne("com.gavin.mybatis.mapper.blogMapper.selectBlog_by_bean",myBlog);
-		this.printBlog(blog);
+		this.printBlog(blog);*/
 	}
 	
 	/**
@@ -86,7 +86,7 @@ public class SimpleMapperTest extends TestCase{
 		myBlog.setId(2);
 		myBlog.setTitle("hahaa");
 		myBlog.setAuthorId(88);
-		int res = session.update("updateBlog_use_bean",myBlog); //res : 更新到数据为 1，没更新到数据为 0 
+		int res = session.update("updateBlog_use_bean",myBlog); //res : 返回受影响的行数
 		System.out.println(res);
 	}
 	
@@ -97,7 +97,7 @@ public class SimpleMapperTest extends TestCase{
 		Blog myBlog = new Blog();
 		myBlog.setTitle("vv");
 		myBlog.setAuthorId(9);
-		int res = session.insert("insertBlog_use_bean",myBlog); //res : 插入成功为 1
+		int res = session.insert("insertBlog_use_bean",myBlog); //res : 返回受影响的行数
 		System.out.println(res);
 	}
 	
@@ -129,7 +129,7 @@ public class SimpleMapperTest extends TestCase{
 	public void testDelete() {
 		Blog myBlog = new Blog();
 		myBlog.setId(3);
-		int res = session.update("deleteBlog_use_bean",myBlog); //res : 删除成功为  1 , 未删到数据为 0
+		int res = session.update("deleteBlog_use_bean",myBlog); //res : 返回受影响的行数
 		System.out.println(res);
 	}
 	/**

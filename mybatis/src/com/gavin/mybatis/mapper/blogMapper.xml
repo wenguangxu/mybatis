@@ -7,6 +7,21 @@
 		select id,title,author_id as authorId from blog where id = #{id}
 	</select>
 	
+	<!-- <select id="selectBlog_by_id" parameterType="int" resultMap="blogResult">
+		select id,title,author_id from blog where id = #{id}
+	</select> -->
+	
+	<resultMap type="Blog" id="blogResult">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="authorId" column="author_id"/>
+	</resultMap>
+	
+	<!-- 拓展resultMap -->
+	<resultMap type="Blog" id="extendsBlogResult">
+		<result property="address" column="address"/>
+	</resultMap>
+	
 	<select id="selectBlog_by_id_Map" parameterType="HashMap" resultType="Blog">
 		select id,title,author_id as authorId from blog where id = #{id}
 	</select>
@@ -23,11 +38,21 @@
 		delete from blog where id = #{id}
 	</delete>
 	
+	<!-- =======================自动生成主键=============================== -->
+	<!-- 支持自动生成主键的数据库： -->
+	<insert id="insertStudent" parameterType="Student" useGeneratedKeys="true" keyProperty="studId">
+		INSERT INTO STUDENTS(STUDENT_ID,NAME, EMAIL, PHONE) VALUES(#{studId},#{name},#{email},#{phone})
+	</insert>
+	
+	<!-- 不支持自动生成主键的数据库(如oracle的序列自增)： -->
 	<insert id="insertBlog_use_bean" statementType="PREPARED" parameterType="Blog">
 		<!-- 自动生成主键 -->
 		<selectKey keyProperty="id" resultType="int" order="BEFORE">
 			select max(id)+1 from blog
+			<!-- select elearning.stud_id_seq.nextval from dual -->
 		</selectKey>
 		insert into blog values(#{id},#{title,jdbcType=VARCHAR},#{authorId})
 	</insert>
+	<!-- =======================自动生成主键=============================== -->
+	
 </mapper>

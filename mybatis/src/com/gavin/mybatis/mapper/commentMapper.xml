@@ -10,6 +10,7 @@
 			<arg column="comments" javaType="String"/>
 		</constructor>
 	</resultMap>
+	
 	<select id="selectComment_by_id" resultMap="commentResultMap">
 		select id,post_id,name,comments from Comments where id = #{id}
 	</select>
